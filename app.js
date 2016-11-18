@@ -1,13 +1,21 @@
 require('dotenv').config();
 const PORT = process.env.PORT || 3000;
 
-var express = require('express')
-var app = express();
+const koa = require('koa');
+const app = new koa();
 
-app.get('/', function(req, res) {
-    res.send('Hello World!')
-})
+app.use((ctx, next) => {
+  const start = new Date();
+  return next().then(() => {
+    const ms = new Date() - start;
+    console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
+  });
+});
 
-app.listen(PORT, function() {
-    console.log(`Example app listening on port ${PORT}!`);
-})
+// reponse
+
+app.use(ctx => {
+    ctx.body = 'Hello Koa';
+});
+
+app.listen(PORT);
